@@ -1,4 +1,4 @@
-# Computer Vision_Controlled Robotic Arm
+# Computer Vision-Controlled Robotic Arm
 A 4-DOF pick-and-place robotic system that uses computer vision to detect and sort colored blocks autonomously. Built as a personal project May-Present 2026.
 
 **Status**: In Development
