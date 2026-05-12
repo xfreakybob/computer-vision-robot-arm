@@ -17,8 +17,8 @@
 - Draft complete README scaffold
 - Assemble robot arm frame
 
-## Week 1 - ... (May 10-16 2026)
-**Goals**: Assemble arm frame, ensure working servos, complete repo folder structure
+## Week 1 - Assemble Arm & Raspberry Pi Setup (May 10-16 2026)
+**Goals**: Assemble arm frame, ensure working servos, complete repo folder structure, set up Raspberry Pi
 
 **Completed**:
 - Assembled arm frame, working servos
