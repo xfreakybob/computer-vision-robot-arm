@@ -23,6 +23,7 @@
 **Completed**:
 - Assembled arm frame, working servos
 - Raspberry Pi setup
+- BOM file created
 
 **Blockers**: ESP32-C3 will not function unless 18650 battery is present due to power management integrated circuit.
 
@@ -33,3 +34,5 @@
 
 **Next Week**:
 - Flash custom ESP32-C3 firmware for serial commands from Raspberry Pi
+
+## Week 2 - ... (May 17-23 2026)
