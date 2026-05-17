@@ -31,6 +31,7 @@
 **Blockers**: ESP32-C3 will not function unless 18650 battery is present due to power management integrated circuit.
 
 **Learned**:
+
 Arm
 - The gripper servo (D) failed after being commanded to close on a rigid object. Because hobby servos have no current limiting, the control circuit drove the motor at maximum output indefinitely (stall condition), generating sustained heat. Disassembly showed the gearbox was intact, the actual failure was electrical: heat damaged the position feedback loop (potentiometer which senses commanded position and actual position or control IC), so the motor now spins continuously because the control circuit can't detect when it has reached the commanded position. Servo (MG90S) replaced.
 - Calibration: adjusting servo horn mounting so that commanding 90/90/90/90 (degree of servos) places the arm in a vertical reference pose with gripper horizontal. 
