@@ -41,7 +41,7 @@ Raspberry Pi
 - How to connect to Raspberry Pi remotely using SSH as well as with monitor + mouse + keyboard plugged in
 
 ESP32-C3
-- ESP32-C3 has two physically separate serial interfaces: USB Communications Device Class peripheral (accessed as 'Serial') and ledgacy hardware UART0 (accessed as 'Serial0'). The SIYEENOVE dev board has an unconventional USB-C connection. The USB-C connector is routed to UART0 via an onboard USB-to-UART bridge as opposed to the native USB peripheral, leaving the native USB peripheral electrically disconnected. As a result, 'Serial.println()' in user code transmits into a dead end, while Serial0.println() reaches the host. Switching all serial calls from 'Serial' to 'Serial0' resolved the issue completely.
+- ESP32-C3 has two physically separate serial interfaces: USB Communications Device Class peripheral (accessed as 'Serial') and legacy hardware UART0 (accessed as 'Serial0'). The SIYEENOVE dev board has an unconventional USB-C connection. The USB-C connector is routed to UART0 via an onboard USB-to-UART bridge as opposed to the native USB peripheral, leaving the native USB peripheral electrically disconnected. As a result, 'Serial.println()' in user code transmits into a dead end, while Serial0.println() reaches the host. Switching all serial calls from 'Serial' to 'Serial0' resolved the issue completely.
 - Diagnostic Path: identical failure in both Arduino IDE Serial Monitor and a direct pyserial miniterm session ruled out the IDE as the cause. Claude identified the distinct serial interfaces on the ESP32-C3 and provided troubleshooting steps to identify the connection discrepancy. 
 
 **Next Week**:
@@ -50,3 +50,26 @@ ESP32-C3
 - Computer vision basic understanding and integration
 
 ## Week 2 - ... (May 17-23 2026)
+**Goals**: ..., add joint limits to firmware, Pi-side ArmController class
+
+**Completed**:
+- Serial commands from Pi to ESP32 via python3 in Pi terminal
+- ESP32-C3 firmware update to implement servo easing
+- Tested per-joint absolute mechanical limits
+
+| Joint | Label | Absolute Range (degrees) |
+|-------|-------|-----------------|
+| Base | S1 / Servo A | 0 - 190 |
+| Shoulder | S2 / Servo B | 0 - 160 |
+| Elbow | S3 / Servo C | 0 - 190 |
+| Gripper | S4 / Servo D | 15 - 120 |
+
+**Blockers**:
+
+**Learned**:
+
+Arm
+- Discovered shoulder servo (C) would oscillate when reaching its vertical reference position from a compact poisition. Oscillation would persist on battery-only power (ruling out USB power sag), and could be stopped by light finger pressure on the arm (likely ruling out electrical feedback loop internal to servo). The most plausible explanation is mechanical resonance in the acrylic frame being excited by the end-of-motion deceleration impulse, with the servo's position corrections reinforcing rather than damping the oscillation, though this wasn't definitively confirmed.
+- Smooth motion was implemented using the ServoEasing library (v3.6) rather than hand-rolling. Implemented EASE_QUARTIC_IN_OUT at 30 deg/sec for gentle end-of-motion deceleration. This eliminated oscillation in all tested poses so far. 
+
+**Next Week**:
