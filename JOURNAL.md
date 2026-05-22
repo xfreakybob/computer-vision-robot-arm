@@ -56,20 +56,23 @@ ESP32-C3
 - Serial commands from Pi to ESP32 via python3 in Pi terminal
 - ESP32-C3 firmware update to implement servo easing
 - Tested per-joint absolute mechanical limits
+- ESP32-C3 firmware update to include absolute joint limits with a 5° safety margin
 
-| Joint | Label | Absolute Range (degrees) |
-|-------|-------|-----------------|
-| Base | S1 / Servo A | 0 - 190 |
-| Shoulder | S2 / Servo B | 0 - 160 |
-| Elbow | S3 / Servo C | 0 - 190 |
-| Gripper | S4 / Servo D | 15 - 120 |
+| Joint | Label | Absolute Range (degrees) | Range w/ Safety Margin |
+|-------|-------|-----------------|---------------------------------|
+| Base | S1 / Servo A | 0 - 190 | 5 - 185 |
+| Shoulder | S2 / Servo B | 0 - 160 | 5 - 155 |
+| Elbow | S3 / Servo C | 0 - 190 | 5 - 185 |
+| Gripper | S4 / Servo D | 15 - 120 | 20 - 115 |
 
 **Blockers**:
 
 **Learned**:
 
+A "conflicting declaration" compilation error during this session turned out to be caused by multiple .ino files in the same sketch folder; Arduino IDE compiles every .ino in a folder as one program, so leftover old versions caused duplicate symbol errors. Reorganizing into one .ino per folder with old versions moved to old_sketches/ resolved it.
+
 Arm
-- Discovered shoulder servo (C) would oscillate when reaching its vertical reference position from a compact poisition. Oscillation would persist on battery-only power (ruling out USB power sag), and could be stopped by light finger pressure on the arm (likely ruling out electrical feedback loop internal to servo). The most plausible explanation is mechanical resonance in the acrylic frame being excited by the end-of-motion deceleration impulse, with the servo's position corrections reinforcing rather than damping the oscillation, though this wasn't definitively confirmed.
+- Discovered shoulder servo (C) would oscillate when reaching its vertical reference position from a compact position. Oscillation would persist on battery-only power (ruling out USB power sag), and could be stopped by light finger pressure on the arm (likely ruling out electrical feedback loop internal to servo). The most plausible explanation is mechanical resonance in the acrylic frame being excited by the end-of-motion deceleration impulse, with the servo's position corrections reinforcing rather than damping the oscillation, though this wasn't definitively confirmed.
 - Smooth motion was implemented using the ServoEasing library (v3.6) rather than hand-rolling. Implemented EASE_QUARTIC_IN_OUT at 30 deg/sec for gentle end-of-motion deceleration. This eliminated oscillation in all tested poses so far. 
 
 **Next Week**:
