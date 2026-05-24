@@ -46,7 +46,7 @@ class ArmController:
         '''
         Close the serial connection.
         '''
-        if self.ser.is_open():
+        if self.ser.is_open:
             self.ser.close()
 
     def __enter__(self):
