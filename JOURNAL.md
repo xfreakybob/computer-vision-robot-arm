@@ -49,14 +49,16 @@ ESP32-C3
 - Begin Pi-side serial communication module (follows ESP32 firmware serial command format, error handling,...) via Python
 - Computer vision basic understanding and integration
 
-## Week 2 - ... (May 17-23 2026)
-**Goals**: ..., add joint limits to firmware, Pi-side ArmController class
+## Week 2 - Raspberry Pi to ESP32 communication (May 17-23 2026)
+**Goals**: Define safe joint angles, add joint limits to firmware, Pi-side ArmController class
 
 **Completed**:
 - Serial commands from Pi to ESP32 via python3 in Pi terminal
 - ESP32-C3 firmware update to implement servo easing
 - Tested per-joint absolute mechanical limits
 - ESP32-C3 firmware update to include absolute joint limits with a 5° safety margin
+- Successful Pi to ESP32 serial communication using Python script
+- Created new Github testing branch for Pi files
 
 | Joint | Label | Absolute Range (degrees) | Range w/ Safety Margin |
 |-------|-------|-----------------|---------------------------------|
@@ -65,14 +67,34 @@ ESP32-C3
 | Elbow | S3 / Servo C | 0 - 190 | 5 - 185 |
 | Gripper | S4 / Servo D | 15 - 120 | 20 - 115 |
 
-**Blockers**:
+**Blockers**: No significant blockers noted during times of building
 
 **Learned**:
 
-A "conflicting declaration" compilation error during this session turned out to be caused by multiple .ino files in the same sketch folder; Arduino IDE compiles every .ino in a folder as one program, so leftover old versions caused duplicate symbol errors. Reorganizing into one .ino per folder with old versions moved to old_sketches/ resolved it.
+Arduino IDE
+- A "conflicting declaration" compilation error during this session turned out to be caused by multiple .ino files in the same sketch folder; Arduino IDE compiles every .ino in a folder as one program, so leftover old versions caused duplicate symbol errors. Reorganizing into one .ino per folder with old versions moved to old_sketches/ resolved it.
 
 Arm
 - Discovered shoulder servo (C) would oscillate when reaching its vertical reference position from a compact position. Oscillation would persist on battery-only power (ruling out USB power sag), and could be stopped by light finger pressure on the arm (likely ruling out electrical feedback loop internal to servo). The most plausible explanation is mechanical resonance in the acrylic frame being excited by the end-of-motion deceleration impulse, with the servo's position corrections reinforcing rather than damping the oscillation, though this wasn't definitively confirmed.
 - Smooth motion was implemented using the ServoEasing library (v3.6) rather than hand-rolling. Implemented EASE_QUARTIC_IN_OUT at 30 deg/sec for gentle end-of-motion deceleration. This eliminated oscillation in all tested poses so far. 
 
-**Next Week**:
+Raspberry Pi & Python
+- Built Pi-side serial communication layer (utilizing Claude): a python `ArmController` class that wraps the ESP32 serial protocol, validates joint angles against the same per-joint limits as the firmware (defense in depth), parses `OK`/`ERR` responses, and raises typed exceptions (`OutOfRangeError`, `FirmwareError`) on failure. The class isolates _all_ serial behind a clean move_to(base, shoulder, elbow, gripper) API so the rest of the project - vision, kinematics, pick-and-place - doesn't need to know the underlying protocol. This makes it easier to refactor to different forms (ex. serial to Wifi/MQTT).
+- Smoke test (`test_arm_controller.py`) exercises the happy path (ideal workflow, home-compact-home), Python-side validation (commanding an out-of-range angle and catching the exception), and context-manager cleanup (setup and cleanup and explicit release).
+- This architecture sets up a layered design: ArmController is lowest Pi-side layer, with future modules (vision detector, kinematics, calibration, trajectory planner, main.py as orchestrator) stacking above it, each only depending on layer below.
+
+Git & Github
+- Python code for Pi were implemented on a feature branch rather than `main` to keep the main branch stable.
+- Utilized `git stash` command to tuck away added files on laptop VS Code. The branch was created on GitHub website (a copy of main), fetched locally with `git fetch origin`, checked out, and the stash popped to bring back the files back on the new branch where they were then committed and pushed. The Pi was then switched to the same branch via `git fetch origin` + `git checkout`, which made the new code available for testing on hardware.
+
+Debugging
+- Testing surfaced two bugs in the test script and class, each caught by isolating layers and working from bottom up.
+- A bare-metal serial test (raw pyserial called outside the class) confirmed the hardware-adjacent layers - port, firmware, etc. - were all working, which narrowed the problem to Python-side code.
+- First bug was a logic which was fixed easily `if __name__ == "main":` (missing double underscores)
+- Second bug was a runtime error (specifically TypeError), a misuse of pyserial's `is_open` (a property, not method) inside the `close()` method, which crashed during context-manager cleanup after the test had otherwise passed.
+- Both bugs were fixed and test sequence runs end-to-end
+- Key Takeaway: when "nothing happens" is the symptom, testing each layer in isolation from the bottom up can be more efficient than reading code top-down
+
+**Next Week**: working detection of objects using camera and OpenCV
+
+## Week 3 - ... (May 24-30 2026)
