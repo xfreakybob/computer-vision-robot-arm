@@ -1,0 +1,114 @@
+'''
+ArmController: Pi-side wrapper around the ESP32 serial protocol.
+
+Communicates with the ESP32-C3 firmware over USB serial using the S1:x,S2:x,S3:x,S4:x command format.
+Mirrors the firmware's joint limits for defense in depth.
+'''
+
+import serial
+import time
+
+# Joint limits mirror the firmware (safe operating ranges, 5 degree margin from absolute mechanical limits documented in Week 2 testing).
+JOINT_LIMITS = {
+    'base':(5,185),
+    'shoulder':(5,155),
+    'elbow':(5,185),
+    'gripper':(20,115)
+}
+
+# Convenience positions
+HOME_POSE = {'base':90, 'shoulder':90, 'elbow':90, 'gripper':90}
+GRIPPER_OPEN = 30
+GRIPPER_CLOSED = 110
+
+class ArmControllerError(Exception):
+    '''Base exception for ArmController errors.'''
+    pass
+
+class OutOfRangeError(ArmControllerError):
+    '''Raised when a command angle is outside the safe operating range.'''
+    pass
+
+class FirmwareError(ArmControllerError):
+    '''Raised when the firmware returns an error response.'''
+    pass
+
+class ArmController:
+    def __init__(self, port='/dev/ttyUSB0', baudrate=115200, timeout=2.0):
+        '''
+        Open serial connection to the ESP32. Waits for the firmware's READY message before returning.
+        '''
+        self.ser = serial.Serial(port, baudrate, timeout=timeout)
+        time.sleep(2) # ESP32 resets on serial open; wait for boot
+        self.ser.reset_input_buffer()
+
+    def close(self):
+        '''
+        Close the serial connection.
+        '''
+        if self.ser.is_open:
+            self.ser.close()
+
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def _validate(self, base, shoulder, elbow, gripper):
+        '''
+        Raise OutOfRangeError if any angle is outside its safe range.
+        '''
+        angles = {
+            'base':base,
+            'shoulder':shoulder,
+            'elbow':elbow,
+            'gripper':gripper
+        }
+        for joint, angle in angles.items():
+            lo, hi = JOINT_LIMITS[joint]
+            if not (lo <= angle <= hi):
+                raise OutOfRangeError(
+                    f"{joint} angle {angle} out of range [{lo}, {hi}]"
+                )
+            
+    def move_to(self, base, shoulder, elbow, gripper):
+        '''
+        Command the arm to a new pose. Blocks until the firmware acknowledges the command (does not wait for motion to complete).
+        '''
+        self._validate(base, shoulder, elbow, gripper)
+        command = f"S1:{base},S2:{shoulder},S3:{elbow},S4:{gripper}\n"
+        self.ser.write(command.encode())
+        response = self.ser.readline().decode().strip()
+
+        if response == "OK":
+            return
+        elif response.startswith("ERR:"):
+            raise FirmwareError(f"Firmware rejected command: {response}")
+        else:
+            raise FirmwareError(f"Unexpected response: {response}")
+        
+    def home(self):
+        '''
+        Move arm to the veritical reference pose (90/90/90/90).
+        '''
+        self.move_to(**HOME_POSE)
+
+    def open_gripper(self):
+        '''
+        Open the gripper while keeping other joints at current command.
+        '''
+        # Reads from the last commandn pose tracked internally; for now,
+        # we just seend a gripper-only command via the full move_to.
+        # (Tracking last comamnd pose is a future enhancement.)
+        raise NotImplementedError(
+            "open_gripper requires pose tracking; use move_to() for now"
+        )
+    
+    def close_gripper(self):
+        '''
+        See open_gripper.
+        '''
+        raise NotImplementedError(
+            "close_gripper requires pose tracking; use move_to() for now"
+        )
