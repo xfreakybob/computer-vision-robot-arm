@@ -98,3 +98,13 @@ Debugging
 **Next Week**: working detection of objects using camera and OpenCV
 
 ## Week 3 - ... (May 24-30 2026)
+**Goals**:
+
+**Blockers**:
+
+**Learned**:
+
+Git & Github
+- Utilized 'merge' feature for first time. Merged feature branch with main. 
+
+**Next Week**:

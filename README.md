@@ -5,3 +5,5 @@ A 4-DOF pick-and-place robotic system that uses computer vision to detect and so
 
 ## Overview
 This project integrates a Raspberry Pi 5 running OpenCV for object detection and inverse kinematics with an ESP32-C3 microcontroller handling real-time servo control. The system detects colored blocks in its workspace, computes the joint angles needed to reach them, and executes a pick-and-place sequence.
+
+Notes: Claude was used to coordinate big-picture pipeline. Also helped brainstorm general github structure. 
