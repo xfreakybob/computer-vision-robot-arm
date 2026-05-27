@@ -97,14 +97,21 @@ Debugging
 
 **Next Week**: working detection of objects using camera and OpenCV
 
-## Week 3 - ... (May 24-30 2026)
-**Goals**:
+## Week 3 - Computer Vision Basics (May 24-30 2026)
+**Goals**: Working detection of objects of certain colours, decide more permanent camera placement? (start organizing setup board?), tune threshold for accuracy, determine shape and colour of 3d printed objects for demo and training
+
+**Completed**:
+- Created new feature branch for OpenCV testing and implementation
+- Successful first run of object detection based on colour on Pi using camera and OpenCV
 
 **Blockers**:
 
 **Learned**:
 
 Git & Github
-- Utilized 'merge' feature for first time. Merged feature branch with main. 
+- Utilized 'merge' feature for first time. Merged feature branch 'Pi-ESP32-serial-comm-test-1' with main. 
+
+OpenCV
+- a
 
 **Next Week**:
