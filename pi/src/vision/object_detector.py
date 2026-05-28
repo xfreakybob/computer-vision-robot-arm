@@ -14,14 +14,14 @@ import numpy as np
 # These are starting defaults - will be tuned for specific lighting and objects using tuning script below
 COLOR_RANGES = {
     'red' : [
-        (np.array([0, 120, 70]), np.array([10,255,255])),    # lower range red
-        (np.array([170, 120, 70]), np.array([179,255,255])) # upper range red        
+        (np.array([0, 140, 76]), np.array([10,255,255])),    # lower range red
+        (np.array([175, 111, 65]), np.array([179,255,255])) # upper range red        
     ],
     'green' : [
         (np.array([36, 80, 50]), np.array([86,255,255]))
     ],
     'blue' : [
-        (np.array([94, 80, 50]), np.array([126,255,255]))
+        (np.array([109, 46, 52]), np.array([132,255,193]))
     ]
 }
 
