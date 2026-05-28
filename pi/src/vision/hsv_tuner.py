@@ -47,7 +47,7 @@ def run_tuner():
         mask = cv2.inRange(hsv, lower, upper)
 
         # Show original and mask side by side
-        mask_bgr =  cv2.cvtColor(mask, cv2.COLOR_COLOR_GRAY2BGR)
+        mask_bgr =  cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
         combined = np.hstack([frame, mask_bgr])
         cv2.imshow("HSV Tuner", combined)
 
