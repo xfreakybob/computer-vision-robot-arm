@@ -1,4 +1,4 @@
-## Overview
+# Overview
 The ESP32-C3 handles all real-time servo control for the robotic arm. It receives joint angle commands from the Raspberry Pi 5 via USB serial, parses them, and drives four MG90S servos via PWM (Pulse Width Modulation).
 
 The mechanical platform is based on a commercial kit from SIYEENOVE. All firmware, assembly, and Raspberry Pi integration were completed independently.
