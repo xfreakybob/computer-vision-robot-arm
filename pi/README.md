@@ -73,7 +73,7 @@ hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
 **DetectedObject instances**
 
-↓ draw() → annotatetd frame
+↓ draw() → annotated frame
 
 **Display**
 
