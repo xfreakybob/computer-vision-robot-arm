@@ -119,4 +119,14 @@ OpenCV
 
 **Next Week**:
 
-## Week 4 - ... (May 31-June 6 2026)
+## Week 4 - Kinematics (May 31-June 6 2026)
+
+**Learned**:
+
+Forward Kinematics
+- Answers the question: Given angles of all joints, where is the gripper in 3D space?
+
+Inverse Kinematics
+- Answers the question: Given a position in 3D space, what are the angles of all joints?
+
+## Week 5,6 - Europe Vacation (June 7-21)
