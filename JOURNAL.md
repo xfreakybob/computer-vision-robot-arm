@@ -97,14 +97,36 @@ Debugging
 
 **Next Week**: working detection of objects using camera and OpenCV
 
-## Week 3 - ... (May 24-30 2026)
-**Goals**:
+## Week 3 - Computer Vision Basics (May 24-30 2026)
+**Goals**: Working detection of objects of certain colours, decide more permanent camera placement? (start organizing setup board?), tune threshold for accuracy, determine shape and colour of 3d printed objects for demo and training
 
-**Blockers**:
+**Completed**:
+- Created new feature branch for OpenCV testing and implementation
+- Successful first run of object detection based on colour on Pi using camera and OpenCV
+- Working HSV tuner
+
+**Blockers**: No significant blockers noted during times of building
 
 **Learned**:
 
 Git & Github
-- Utilized 'merge' feature for first time. Merged feature branch with main. 
+- Utilized 'merge' feature for first time. Merged feature branch 'Pi-ESP32-serial-comm-test-1' with main. 
+
+OpenCV
+- Utilizing HSV Thresholding instead of native BGR from OpenCV. Refer to section 'HSV vs. BGR' in `OpenCV & Numpy` in pi README.
+- Different lighting and backgrounds can cause HSV ranges for colours to shift, so implementing `hsv_tuner.py` script lets you actively find the ranges first then manually change the colour ranges in `object_detector.py`
+- Red is unique and needs two ranges for hue due to OpenCV's 8-bit image capacity (only supports up to 256 unique values when colour wheel is 360 degrees). OpenCV decided to divide hue value by 2 so that all colours can fit in one byte, thereby condensing hue to 0-179 inclusive where each unit represents two degrees. Red sits at the top of the colour wheel so its seeps into both ranges. That's why red needs to be accounted for in both the lower (arorund 0) and upper (around 179) range! 
 
 **Next Week**:
+
+## Week 4 - Kinematics (May 31-June 6 2026)
+
+**Learned**:
+
+Forward Kinematics
+- Answers the question: Given angles of all joints, where is the gripper in 3D space?
+
+Inverse Kinematics
+- Answers the question: Given a position in 3D space, what are the angles of all joints?
+
+## Week 5,6 - Europe Vacation (June 7-21)
