@@ -42,6 +42,11 @@ class ArmController:
         time.sleep(2) # ESP32 resets on serial open; wait for boot
         self.ser.reset_input_buffer()
 
+
+        # Opening the serial port resets the ESP32, and the firmware puts every servo at 90 degrees on boot
+        # so HOME_POSE is a safe assumption for the arm's actual position
+        self.last_pose = dict(HOME_POSE)
+
     def close(self):
         '''
         Close the serial connection.
@@ -82,6 +87,9 @@ class ArmController:
         response = self.ser.readline().decode().strip()
 
         if response == "OK":
+            self.last_pose = {
+                'base': base, 'shoulder': shoulder, 'elbow': elbow, 'gripper': gripper
+            }
             return
         elif response.startswith("ERR:"):
             raise FirmwareError(f"Firmware rejected command: {response}")
@@ -98,17 +106,14 @@ class ArmController:
         '''
         Open the gripper while keeping other joints at current command.
         '''
-        # Reads from the last commandn pose tracked internally; for now,
-        # we just seend a gripper-only command via the full move_to.
-        # (Tracking last comamnd pose is a future enhancement.)
-        raise NotImplementedError(
-            "open_gripper requires pose tracking; use move_to() for now"
-        )
+        pose = dict(self.last_pose)
+        pose['gripper'] = GRIPPER_OPEN
+        self.move_to(**pose)
     
     def close_gripper(self):
         '''
-        See open_gripper.
+        Close the gripper, keeping base/shoulder/elbow at their last commanded pose
         '''
-        raise NotImplementedError(
-            "close_gripper requires pose tracking; use move_to() for now"
-        )
+        pose = dict(self.last_pose)
+        pose['gripper'] = GRIPPER_CLOSED
+        self.move_to(**pose)
