@@ -1,3 +1,4 @@
 pyserial>=3.5
 opencv-python>=4.10.0
 numpy>=1.26.0
+ikpy>=3.3.4
