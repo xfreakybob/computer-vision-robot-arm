@@ -15,10 +15,10 @@ struct JointLimits {
 };
 
 const JointLimits LIMITS[4] = {
-  {5, 185},   // Servo A (base)
-  {5, 155},   // Servo B (shoulder)
-  {5, 185},   // Servo C (elbow)
-  {20, 115}   // Servo D (gripper)
+  {5, 185},  // Servo A (base)
+  {5, 155},  // Servo B (shoulder)
+  {5, 185},  // Servo C (elbow)
+  {20, 115}  // Servo D (gripper)
 };
 
 void setup() {
