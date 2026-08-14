@@ -129,4 +129,14 @@ Forward Kinematics
 Inverse Kinematics
 - Answers the question: Given a position in 3D space, what are the angles of all joints?
 
-## Week 5,6 - Europe Vacation (June 7-21)
+## Week 5 - Revising Code, Implementing ikpy, 3D Printing? (August 14-August 21 2026)
+
+**Goals**: Revise & update pi code where needed, learn and implement ikpy library, design and print objects for pick-and-place sequence
+
+**Completed**:
+
+**Blockers**:
+
+**Learned**:
+
+**Next Week**:
