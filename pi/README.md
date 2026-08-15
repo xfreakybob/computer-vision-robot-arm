@@ -3,6 +3,7 @@ The Raspberry Pi 5 4GB handles
 
 Table of Contents
 - [OpenCV & NumPy](#opencv--numpy)
+- [Kinematics](#kinematics)
 
 
 ## OpenCV & NumPy
@@ -76,6 +77,27 @@ hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 ↓ draw() → annotated frame
 
 **Display**
+
+</details>
+
+## Kinematics - IKPy
+Kinematics in robotics is the study of motion for a robot's links and joints without looking at the forces or torques causing the movement.
+
+Forward kinematics: *where* the robot's hand will be based on the joint angles\
+Inverse kinematics: *what* joint angles are needed to put that hand in a specific spot
+
+<details>
+<summary>About the ikpy library</summary>
+
+IKPy (Inverse Kinematics Python) is a pure-Python library designed to calculate the forward and inverse kinematics of robotic chains.
+
+There are **2 main classes** used for functionality:
+
+|   Class   |    Description    | Parameters |
+|----------|--------------|----------|
+| **Chain**     | core class used to represent a robot's kinematic structure. Acts as mathematical engine. |- links[] (required)= list of `Link` objects defining the physical layout and segments of the robot from base to tip<br> - active_links_mask (optional) = list of booleans matching length of `links[]` list. True means joint can move, False locks the joint at specific angle <br> - name (optional) = string label to identify kinematic chain |
+| **Link** | represents a single component in a robot's kinematic chain. A robot is essentially a list of `Link` objects passed into a `Chain` |- name (required) = A label for the link <br> - length (required) = physical length of the segment along its primary axis <br> - bounds (optional) = a min/max tuple in rads defining how far this joint can move |
+| URDFLink | subclass of Link, stands for Unified Robot Description Format. Used if you want to manually build a robot using URDF-style parameters instead of raw lengths |- name (required) = label name matching your URDF config. mapping <br> - origin_translation (required) = 3D translation vector (xyz attribute of the joint origin) <br> - origin_orientation (required) = 3D orientation vector (roll pitch yaw attribute of the joint origin) <br> - rotation (optional) = joint rotation axis vector (xys of the joint axis) <br> - bounds (optional) = min and max limits for joint movements |
 
 </details>
 
