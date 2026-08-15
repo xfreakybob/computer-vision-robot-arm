@@ -129,14 +129,20 @@ Forward Kinematics
 Inverse Kinematics
 - Answers the question: Given a position in 3D space, what are the angles of all joints?
 
-## Week 5 - Revising Code, Implementing ikpy, 3D Printing? (August 14-August 21 2026)
+## Week 5 - Sprint Restart: Revising Code, Implementing ikpy, 3D Printing (August 14-August 21 2026)
 
-**Goals**: Revise & update pi code where needed, learn and implement ikpy library, design and print objects for pick-and-place sequence
+**Goals**: Recover project state after gap, replan for 2-week hard deadline, revise & update pi code where needed, learn and implement ikpy library, design and print objects for pick-and-place sequence
 
 **Completed**:
+- Replanned remaining scope into 14-day MVP (minimally viable product) sprint; dropped all stretch goals, switched IK approach from closed-form to ikpy
+- Designed, sliced, and printed first pick-and-place object (22mm diameter cylinder, engraved initials)
+- Built accurate kinematics model
 
 **Blockers**:
 
 **Learned**:
+
+3D Printing
+- Cylinder chosen over cube specifically because a cube's effective grip width changes with rotation (face width vs. diagonal). A cylinder presents a constant width regardless of rotation
 
 **Next Week**:
