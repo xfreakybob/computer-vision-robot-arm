@@ -49,7 +49,7 @@ arm_chain = Chain(name='arm', active_links_mask=[False, True, True, True, False]
         name="elbow",
         origin_translation=[0,0,SHOULDER_TO_ELBOW],
         origin_orientation=[0,0,0],
-        rotation=[0,1,0],               # pitch, parallel to shoulder
+        rotation=[0,-1,0],               # pitch, parallel to shoulder
         bounds=_bounds(5, 185)          # matches JOINT_LIMITS['elbow']
     ),
     URDFLink(
