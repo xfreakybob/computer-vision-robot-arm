@@ -12,7 +12,7 @@ from comm.serial_comm import ArmController, HOME_POSE
 from kinematics.arm_chain import gripper_position
 
 TEST_POSES = [
-    {'base':90, 'shoulder':90, 'elbow':90},  # home, should be x=0, y=0, z=209.5
+    {'base':90, 'shoulder':90, 'elbow':90},  # home
     {'base':90, 'shoulder':60, 'elbow':90},
     {'base':90, 'shoulder':90, 'elbow':60},
 
