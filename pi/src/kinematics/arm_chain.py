@@ -25,7 +25,7 @@ from ikpy.link import OriginLink, URDFLink
  
 BASE_TO_SHOULDER = 46.5
 SHOULDER_TO_ELBOW = 58
-ELBOW_TO_GRIPPER = 75
+ELBOW_TO_GRIPPER = 115
  
  
 def _bounds(servo_lo, servo_hi):
