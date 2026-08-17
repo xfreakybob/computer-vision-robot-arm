@@ -28,12 +28,12 @@ OBJECT_COLOUR = 'green'   # TODO: set to colour printed
 # Placeholder values, replace with points that are actually reachable
 # and visible to the camera on your setup.
 CALIBRATION_POINTS = [
-    (100, -100),
-    (100, 0),
-    (100, 100),
-    (200, -100),
-    (200, 0),
-    (200, 100),
+    (124, 0),
+    (170, 0),
+    (39, 120),
+    (39, -155),
+    (123, -153),
+    (123, 125),
 ]
 
 def main():
