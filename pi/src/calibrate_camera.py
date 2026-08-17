@@ -41,41 +41,46 @@ def main():
     detector = ObjectDetector()
     pixel_points = []
     world_points = []
-
+ 
     for wx, wy in CALIBRATION_POINTS:
         input(f"\nPlace the object at world ({wx}, {wy}) mm, then press Enter...")
+        # Drain the driver's frame buffer, otherwise cap.read() returns a
+        # stale frame from before the object was moved (V4L2 keeps queuing
+        # frames while nothing reads them during the input() prompt).
+        for _ in range(5):
+            cap.read()
         ret, frame = cap.read()
         if not ret:
             print("  Camera read failed, skipping this point.")
             continue
-
+ 
         detected = [o for o in detector.detect(frame) if o.colour == OBJECT_COLOUR]
         if not detected:
             print("  No object detected here, skipping. Check lighting/position.")
             continue
-
+ 
         obj = max(detected, key=lambda o: o.area)  # largest match, in case of noise
         px, py = obj.centroid
         print(f"  Detected pixel centroid: ({px}, {py})")
         pixel_points.append([px, py])
         world_points.append([wx, wy])
-
+ 
     cap.release()
-
+ 
     if len(pixel_points) < 4:
         print(f"\nNeed at least 4 successful points for a homography, got {len(pixel_points)}.")
         return
-
+ 
     pixel_points = np.array(pixel_points, dtype=np.float32)
     world_points = np.array(world_points, dtype=np.float32)
-
+ 
     H, status = cv2.findHomography(pixel_points, world_points)
     print("\nHomography matrix:")
     print(H)
-
+ 
     with open('calibration.json', 'w') as f:
         json.dump({'homography': H.tolist()}, f, indent=2)
     print("\nSaved to calibration.json")
-
+ 
 if __name__ == "__main__":
-    main()
+    main()  
