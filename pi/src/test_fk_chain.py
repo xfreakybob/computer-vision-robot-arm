@@ -14,7 +14,10 @@ from kinematics.arm_chain import gripper_position
 TEST_POSES = [
     {'base':90, 'shoulder':90, 'elbow':90},  # home, should be x=0, y=0, z=209.5
     {'base':90, 'shoulder':60, 'elbow':90},
-    {'base':90, 'shoulder':90, 'elbow':60}
+    {'base':90, 'shoulder':90, 'elbow':60},
+
+    {'base':60, 'shoulder':60, 'elbow':60},
+    {'base':110, 'shoulder':70, 'elbow':60}
 ]
 
 def main():
