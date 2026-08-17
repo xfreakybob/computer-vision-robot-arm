@@ -27,7 +27,7 @@ COLOR_RANGES = {
 
 # Minimum contour area in pixels to count as a detection.
 # Filters out noise and small reflections. Tuned based on how large objects appear in frame.
-MIN_CONTOUR_AREA = 500
+MIN_CONTOUR_AREA = 250
 
 # Represents a single detected object in a frame
 class DetectedObject:
