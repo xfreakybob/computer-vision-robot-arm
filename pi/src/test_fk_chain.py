@@ -8,28 +8,31 @@ Measured from the base's rotation axis, at the top of the base plate:
     y = horizontal, sideways from that
 """
 
-from comm.serial_comm import ArmController, HOME_POSE
+from comm.serial_comm import ArmController, GRIPPER_CLOSED
 from kinematics.arm_chain import gripper_position
-
+ 
+# Poses chosen to reach forward toward the table so a real cylinder can
+# actually sit under the jaws for the measurement.
 TEST_POSES = [
-    {'base':90, 'shoulder':90, 'elbow':90},  # home
-    {'base':90, 'shoulder':60, 'elbow':90},
-    {'base':90, 'shoulder':90, 'elbow':60},
-
-    {'base':60, 'shoulder':60, 'elbow':60},
-    {'base':110, 'shoulder':70, 'elbow':60}
+    {'base': 90, 'shoulder': 30, 'elbow': 150},
+    {'base': 90, 'shoulder': 45, 'elbow': 135},
+    {'base': 90, 'shoulder': 60, 'elbow': 120},
 ]
-
+ 
 def main():
     with ArmController() as arm:
-        for pose in TEST_POSES:
-            arm.move_to(gripper=HOME_POSE['gripper'], **pose)
-            x, y, z = gripper_position(**pose)
-            print(f"\nPose: {pose}")
-            print(f"Model predicts: x={x:.1f}mm, y={y:.1f}mm, z={z:.1f}mm")
-            input("Measure real arm and press Enter for next pose...")
-        print("\nDone. Returning home")
         arm.home()
-
+        for pose in TEST_POSES:
+            input(f"\nPlace the cylinder where the jaws will close on it "
+                  f"for pose {pose}, then press Enter to command...")
+            arm.move_to(gripper=GRIPPER_CLOSED, **pose)
+            x, y, z = gripper_position(**pose)
+            print(f"  Model predicts grip point at: x={x:.1f}mm  y={y:.1f}mm  z={z:.1f}mm")
+            print(f"  (or {z + 30:.1f}mm above the tabletop)")
+            input("  Measure where the cylinder actually is, then press Enter to continue...")
+ 
+        print("\nDone. Returning home.")
+        arm.home()
+ 
 if __name__ == "__main__":
     main()
