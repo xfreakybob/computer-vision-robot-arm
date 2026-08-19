@@ -137,6 +137,8 @@ Inverse Kinematics
 - Replanned remaining scope into 14-day MVP (minimally viable product) sprint; dropped all stretch goals, switched IK approach from closed-form to ikpy
 - Designed, sliced, and printed first pick-and-place object (22mm diameter cylinder, engraved initials)
 - Built accurate kinematics model
+- Physically fixed arm and camera to keep constant relative pose
+- Calibrated arm using 6 test points on the physical board with minimal error
 
 **Blockers**:
 
@@ -144,5 +146,12 @@ Inverse Kinematics
 
 3D Printing
 - Cylinder chosen over cube specifically because a cube's effective grip width changes with rotation (face width vs. diagonal). A cylinder presents a constant width regardless of rotation
+
+Camera-to-arm calibration (Homography)
+- A homography maps points between two flat planes, this is ensured by having the camera completely stationary for all pictures with a top-down view
+- Calibration is the translator/connector between the camera's pixel coordinate with the arm's measurements to a point in the real world
+
+Claude
+- Claude (amongst other AI models) can often make assumptions and interpretation mistakes and provide results that do not align with the user's intent. This is inevitable but can become prominent in a dense project such as this. That's why constant double-checking and clearly defined objectives will optimize the behaviour of the model. Often easier said than done as users tend to make many assumptions on the behaviour of the model itself.
 
 **Next Week**:
