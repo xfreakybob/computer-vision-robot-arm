@@ -19,7 +19,7 @@ JOINT_LIMITS = {
 # Convenience positions
 HOME_POSE = {'base':90, 'shoulder':90, 'elbow':90, 'gripper':90}
 GRIPPER_OPEN = 90
-GRIPPER_CLOSED = 25
+GRIPPER_CLOSED = 23
 
 class ArmControllerError(Exception):
     '''Base exception for ArmController errors.'''
