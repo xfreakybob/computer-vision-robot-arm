@@ -36,9 +36,11 @@ LIFT_Z = 90                 # clear height after grasp, high enough that the who
                             # cylinder-height object during traverse
 
 # --- Timing (seconds), tuned to let easing complete before sending the next command ---
-SETTLE_LONG = 1.5           # after a big move (traverse across the workspace)
-SETTLE_SHORT = 0.8          # after a short move (descend, lift)
-GRIPPER_TIME = 0.6          # gripper close/open
+# The shoulder eases at 30 deg/sec with EASE_QUARTIC_IN_OUT (chosen back in Week 2
+# to suppress resonance in the acrylic frame), which dominates every move's total
+# time. 1.5s is enough for even large angular swings to finish before we override.
+SETTLE = 1.5
+GRIPPER_TIME = 0.6
 
 
 def apply_homography(H, px, py):
@@ -60,14 +62,14 @@ def detect_target(cap, detector):
     return max(matches, key=lambda o: o.area) if matches else None
 
 
-def move_with_gripper(arm, xyz, gripper_angle, settle=SETTLE_LONG):
+def move_with_gripper(arm, xyz, gripper_angle):
     """Solve IK for xyz and command the arm to it, holding the given gripper angle."""
     x, y, z = xyz
     angles = solve_ik(x, y, z)
     print(f"  -> ({x:.0f}, {y:.0f}, {z}) mm  ->  "
           f"base={angles['base']}, shoulder={angles['shoulder']}, elbow={angles['elbow']}")
     arm.move_to(gripper=gripper_angle, **angles)
-    time.sleep(settle)
+    time.sleep(SETTLE)
 
 
 def main():
@@ -81,7 +83,7 @@ def main():
         with ArmController() as arm:
             print("Homing...")
             arm.home()
-            time.sleep(SETTLE_LONG)
+            time.sleep(SETTLE)
 
             print(f"\nSearching for {TARGET_COLOUR} object...")
             target = detect_target(cap, detector)
@@ -106,14 +108,14 @@ def main():
             move_with_gripper(arm, (pick_x, pick_y, HOVER_Z), GRIPPER_OPEN)
 
             print("Descend to pick point...")
-            move_with_gripper(arm, (pick_x, pick_y, PICK_Z), GRIPPER_OPEN, settle=SETTLE_SHORT)
+            move_with_gripper(arm, (pick_x, pick_y, PICK_Z), GRIPPER_OPEN)
 
             print("Close gripper...")
             arm.close_gripper()
             time.sleep(GRIPPER_TIME)
 
             print("Lift...")
-            move_with_gripper(arm, (pick_x, pick_y, LIFT_Z), GRIPPER_CLOSED, settle=SETTLE_SHORT)
+            move_with_gripper(arm, (pick_x, pick_y, LIFT_Z), GRIPPER_CLOSED)
 
             print(f"Traverse to drop zone {DROP_XY}...")
             move_with_gripper(arm, (DROP_XY[0], DROP_XY[1], LIFT_Z), GRIPPER_CLOSED)
@@ -124,7 +126,7 @@ def main():
 
             print("Homing.")
             arm.home()
-            time.sleep(SETTLE_LONG)
+            time.sleep(SETTLE)
 
     finally:
         cap.release()
