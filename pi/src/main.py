@@ -97,7 +97,7 @@ def main():
             # in extended poses, so real picks land short of the model's prediction.
             # Empirically, ~4% correction scales with reach without over-correcting
             # close targets (where accuracy was already good).
-            REACH_GAIN = 1.04
+            REACH_GAIN = 1.02
             pick_x = wx * REACH_GAIN
             pick_y = wy * REACH_GAIN
             print(f"Pick target (with reach compensation): ({pick_x:.1f}, {pick_y:.1f}) mm")
