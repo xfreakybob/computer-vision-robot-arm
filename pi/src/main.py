@@ -31,7 +31,9 @@ TABLE_Z = -30               # tabletop in model coords, base rotation axis is 30
 CYLINDER_HEIGHT = 22
 PICK_Z = TABLE_Z + CYLINDER_HEIGHT // 2   # mid-cylinder, solid grasp point
 HOVER_Z = 30                # comfortably above any object on the table
-LIFT_Z = 60                 # clear height after grasp, before traversing to drop
+LIFT_Z = 90                 # clear height after grasp, high enough that the whole
+                            # arm (not just the grip point) stays well above any
+                            # cylinder-height object during traverse
 
 # --- Timing (seconds), tuned to let easing complete before sending the next command ---
 SETTLE_LONG = 1.5           # after a big move (traverse across the workspace)
@@ -91,18 +93,27 @@ def main():
             wx, wy = apply_homography(H, px, py)
             print(f"Detected at pixel ({px}, {py}) -> world ({wx:.1f}, {wy:.1f}) mm")
 
+            # Distance-proportional offset: servo error compounds along the chain
+            # in extended poses, so real picks land short of the model's prediction.
+            # Empirically, ~4% correction scales with reach without over-correcting
+            # close targets (where accuracy was already good).
+            REACH_GAIN = 1.04
+            pick_x = wx * REACH_GAIN
+            pick_y = wy * REACH_GAIN
+            print(f"Pick target (with reach compensation): ({pick_x:.1f}, {pick_y:.1f}) mm")
+
             print("\nHover above pick point...")
-            move_with_gripper(arm, (wx, wy, HOVER_Z), GRIPPER_OPEN)
+            move_with_gripper(arm, (pick_x, pick_y, HOVER_Z), GRIPPER_OPEN)
 
             print("Descend to pick point...")
-            move_with_gripper(arm, (wx, wy, PICK_Z), GRIPPER_OPEN, settle=SETTLE_SHORT)
+            move_with_gripper(arm, (pick_x, pick_y, PICK_Z), GRIPPER_OPEN, settle=SETTLE_SHORT)
 
             print("Close gripper...")
             arm.close_gripper()
             time.sleep(GRIPPER_TIME)
 
             print("Lift...")
-            move_with_gripper(arm, (wx, wy, LIFT_Z), GRIPPER_CLOSED, settle=SETTLE_SHORT)
+            move_with_gripper(arm, (pick_x, pick_y, LIFT_Z), GRIPPER_CLOSED, settle=SETTLE_SHORT)
 
             print(f"Traverse to drop zone {DROP_XY}...")
             move_with_gripper(arm, (DROP_XY[0], DROP_XY[1], LIFT_Z), GRIPPER_CLOSED)
