@@ -23,8 +23,15 @@ from kinematics.arm_chain import solve_ik
 
 # --- Setup constants, change these if your physical setup shifts ---
 TARGET_COLOUR = 'green'
-DROP_XY = (80, -80)         # (x, y) mm in the arm's frame, where picked objects go
+DROP_XY = (0, -100)         # (x, y) mm in the arm's frame, where picked objects go
                             # (chosen inside the reach envelope, IK solves cleanly here)
+
+# Half-width of the world-space exclusion zone around DROP_XY. Any detected
+# object whose world coords fall within this square of DROP_XY is treated as
+# "already in the container" and ignored, so the arm never re-picks its own
+# successful drops. Bigger than the container's footprint gives margin for
+# calibration drift and drop landing spread.
+DROP_ZONE_EXCLUSION = 50    # mm
 
 # --- Geometry constants tied to the calibrated setup ---
 TABLE_Z = -30               # tabletop in model coords, base rotation axis is 30mm above table
@@ -50,16 +57,15 @@ def apply_homography(H, px, py):
     return float(dst[0, 0, 0]), float(dst[0, 0, 1])
 
 
-def detect_target(cap, detector):
-    """Grab a fresh frame, return the largest object of TARGET_COLOUR, or None."""
+def detect_targets(cap, detector):
+    """Grab a fresh frame, return all objects of TARGET_COLOUR (may be empty)."""
     # Drain the driver's frame buffer, otherwise cap.read() returns a stale frame
     for _ in range(5):
         cap.read()
     ret, frame = cap.read()
     if not ret:
-        return None
-    matches = [o for o in detector.detect(frame) if o.colour == TARGET_COLOUR]
-    return max(matches, key=lambda o: o.area) if matches else None
+        return []
+    return [o for o in detector.detect(frame) if o.colour == TARGET_COLOUR]
 
 
 def move_with_gripper(arm, xyz, gripper_angle):
@@ -70,6 +76,9 @@ def move_with_gripper(arm, xyz, gripper_angle):
           f"base={angles['base']}, shoulder={angles['shoulder']}, elbow={angles['elbow']}")
     arm.move_to(gripper=gripper_angle, **angles)
     time.sleep(SETTLE)
+
+
+MAX_PICKS = 20              # safety cap: stop even if detector keeps seeing objects
 
 
 def main():
@@ -85,46 +94,68 @@ def main():
             arm.home()
             time.sleep(SETTLE)
 
-            print(f"\nSearching for {TARGET_COLOUR} object...")
-            target = detect_target(cap, detector)
-            if not target:
-                print(f"No {TARGET_COLOUR} object detected. Aborting.")
-                return
+            picks_done = 0
+            while picks_done < MAX_PICKS:
+                print(f"\n--- Cycle {picks_done + 1}: searching for {TARGET_COLOUR} objects ---")
+                targets = detect_targets(cap, detector)
+                if not targets:
+                    print(f"No {TARGET_COLOUR} objects visible, stopping.")
+                    break
 
-            px, py = target.centroid
-            wx, wy = apply_homography(H, px, py)
-            print(f"Detected at pixel ({px}, {py}) -> world ({wx:.1f}, {wy:.1f}) mm")
+                # Convert each target's pixel centroid to world coords, then filter
+                # out anything inside the drop-zone exclusion square (that's a
+                # cylinder already in the container, not a new pick target)
+                targets_world = []
+                for t in targets:
+                    px, py = t.centroid
+                    wx, wy = apply_homography(H, px, py)
+                    if (abs(wx - DROP_XY[0]) < DROP_ZONE_EXCLUSION and
+                            abs(wy - DROP_XY[1]) < DROP_ZONE_EXCLUSION):
+                        continue
+                    targets_world.append((wx, wy, t))
 
-            # Distance-proportional offset: servo error compounds along the chain
-            # in extended poses, so real picks land short of the model's prediction.
-            # Empirically, ~4% correction scales with reach without over-correcting
-            # close targets (where accuracy was already good).
-            REACH_GAIN = 1.02
-            pick_x = wx * REACH_GAIN
-            pick_y = wy * REACH_GAIN
-            print(f"Pick target (with reach compensation): ({pick_x:.1f}, {pick_y:.1f}) mm")
+                if not targets_world:
+                    print(f"Only {TARGET_COLOUR} objects in the drop zone remain, stopping.")
+                    break
 
-            print("\nHover above pick point...")
-            move_with_gripper(arm, (pick_x, pick_y, HOVER_Z), GRIPPER_OPEN)
+                # Pick the one closest to the base rotation axis (shortest reach =
+                # highest accuracy, given the error-with-extension pattern from FK)
+                targets_world.sort(key=lambda tw: tw[0] ** 2 + tw[1] ** 2)
+                wx, wy, target = targets_world[0]
 
-            print("Descend to pick point...")
-            move_with_gripper(arm, (pick_x, pick_y, PICK_Z), GRIPPER_OPEN)
+                print(f"{len(targets_world)} pickable object(s), picking closest at world "
+                      f"({wx:.1f}, {wy:.1f}) mm")
 
-            print("Close gripper...")
-            arm.close_gripper()
-            time.sleep(GRIPPER_TIME)
+                # Distance-proportional offset: servo error compounds along the chain
+                # in extended poses, so real picks land short of the model's prediction.
+                REACH_GAIN = 1.02
+                pick_x = wx * REACH_GAIN
+                pick_y = wy * REACH_GAIN
+                print(f"Pick target (with reach compensation): ({pick_x:.1f}, {pick_y:.1f}) mm")
 
-            print("Lift...")
-            move_with_gripper(arm, (pick_x, pick_y, LIFT_Z), GRIPPER_CLOSED)
+                print("Hover above pick point...")
+                move_with_gripper(arm, (pick_x, pick_y, HOVER_Z), GRIPPER_OPEN)
 
-            print(f"Traverse to drop zone {DROP_XY}...")
-            move_with_gripper(arm, (DROP_XY[0], DROP_XY[1], LIFT_Z), GRIPPER_CLOSED)
+                print("Descend to pick point...")
+                move_with_gripper(arm, (pick_x, pick_y, PICK_Z), GRIPPER_OPEN)
 
-            print("Release...")
-            arm.open_gripper()
-            time.sleep(GRIPPER_TIME)
+                print("Close gripper...")
+                arm.close_gripper()
+                time.sleep(GRIPPER_TIME)
 
-            print("Homing.")
+                print("Lift...")
+                move_with_gripper(arm, (pick_x, pick_y, LIFT_Z), GRIPPER_CLOSED)
+
+                print(f"Traverse to drop zone {DROP_XY}...")
+                move_with_gripper(arm, (DROP_XY[0], DROP_XY[1], LIFT_Z), GRIPPER_CLOSED)
+
+                print("Release...")
+                arm.open_gripper()
+                time.sleep(GRIPPER_TIME)
+
+                picks_done += 1
+
+            print(f"\nDone. {picks_done} object(s) picked.")
             arm.home()
             time.sleep(SETTLE)
 
