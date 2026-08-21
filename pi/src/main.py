@@ -23,8 +23,8 @@ from kinematics.arm_chain import solve_ik
 
 # --- Setup constants, change these if your physical setup shifts ---
 TARGET_COLOUR = 'green'
-DROP_XY = (0, -100)         # (x, y) mm in the arm's frame, where picked objects go
-                            # (chosen inside the reach envelope, IK solves cleanly here)
+DROP_XY = (120, 0)          # (x, y) mm in the arm's frame, where picked objects go
+                            # (straight forward from base, well inside reach envelope)
 
 # Half-width of the world-space exclusion zone around DROP_XY. Any detected
 # object whose world coords fall within this square of DROP_XY is treated as

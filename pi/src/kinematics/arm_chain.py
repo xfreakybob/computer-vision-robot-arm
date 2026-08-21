@@ -93,15 +93,34 @@ def gripper_position(base, shoulder, elbow):
     return matrix[:3, 3]
  
  
-def solve_ik(x, y, z, initial_servo_pose=(90, 90, 90)):
-    """
-    Solve for the (base, shoulder, elbow) servo angles that place the
-    gripper at the given (x, y, z) mm position. Position only, no
-    orientation control (this arm's gripper has none).
-    """
+class UnreachableTargetError(Exception):
+    """Raised when solve_ik can't find joint angles that reach the requested target."""
+    pass
+ 
+ 
+def solve_ik(x, y, z, tolerance_mm=10):
+    # Point the base toward the target's (x, y) direction. atan2 result is
+    # measured from +x axis toward +y, and our base=90 corresponds to the
+    # arm facing +x, so we add 90 degrees to convert.
+    target_base_deg = 90 + np.degrees(np.arctan2(y, x))
+    # Clamp into the base's safe servo range
+    target_base_deg = max(5, min(185, target_base_deg))
+    initial_servo_pose = (int(target_base_deg), 45, 90)
+ 
     initial = servo_to_chain_angles(*initial_servo_pose)
     result = arm_chain.inverse_kinematics(
         target_position=[x, y, z],
         initial_position=initial,
     )
-    return chain_to_servo_angles(result)
+    solved = chain_to_servo_angles(result)
+ 
+    # Confirm the solution actually reaches the requested target
+    actual = arm_chain.forward_kinematics(result)[:3, 3]
+    err = float(np.linalg.norm(actual - np.array([x, y, z])))
+    if err > tolerance_mm:
+        raise UnreachableTargetError(
+            f"Target ({x:.1f}, {y:.1f}, {z:.1f}) mm is unreachable "
+            f"(best solution {solved} lands {err:.1f}mm away, "
+            f"tolerance {tolerance_mm}mm)"
+        )
+    return solved
