@@ -129,9 +129,9 @@ Forward Kinematics
 Inverse Kinematics
 - Answers the question: Given a position in 3D space, what are the angles of all joints?
 
-## Week 5 - Sprint Restart: Revising Code, Implementing ikpy, 3D Printing (August 14-August 21 2026)
+## Week 5, 6 - Sprint Restart: Revising Code, Implementing ikpy, 3D Printing (August 14-August 23 2026)
 
-**Goals**: Recover project state after gap, replan for 2-week hard deadline, revise & update pi code where needed, learn and implement ikpy library, design and print objects for pick-and-place sequence
+**Goals**: Recover project state after gap, replan for 2-week hard deadline, revise & update pi code where needed, learn and implement ikpy library, design and print objects for pick-and-place sequence, implement functional end-to-end main.py, tune pipeline for consistent single-object picks, extend to multi-object with physical drop contianer, characterize real-world reliability
 
 **Completed**:
 - Replanned remaining scope into 14-day MVP (minimally viable product) sprint; dropped all stretch goals, switched IK approach from closed-form to ikpy
@@ -139,8 +139,15 @@ Inverse Kinematics
 - Built accurate kinematics model
 - Physically fixed arm and camera to keep constant relative pose
 - Calibrated arm using 6 test points on the physical board with minimal error
+- Implemented main.py for one object, bringing together all modules in this project (vision, kinematics, serial communication to esp32)
+- Tuned pipeline for reliable object pickup
+- Improved main.py for multiple objects
+- Ran reliability characterization: 11 runs of 3 objects each, aggregate 30/33 pick success rate (~91%)
 
-**Blockers**:
+**Blockers**: None outstanding by today (August 23)
+- Grip too was lose one first run of main.py (fixed by both a wider cylinder and tighter close angle)
+- Arm was undershooting objects farther away (fixed by implementing reach compensation)
+- Objects in drop-off box being re-picked as new targets (fixed by world-coordinate exclusion mask)
 
 **Learned**:
 
@@ -151,7 +158,15 @@ Camera-to-arm calibration (Homography)
 - A homography maps points between two flat planes, this is ensured by having the camera completely stationary for all pictures with a top-down view
 - Calibration is the translator/connector between the camera's pixel coordinate with the arm's measurements to a point in the real world
 
+Motion Timing
+- When testing single object pick-and-place sequence, the arm visibly interrupts one motion mid-transit to begin the next
+- `move_to()` returns as soon as the firmware acknowledges (starts easing), NOT when motion completes. Sleep duration after `move_to()` are the actual gate on when the next command can be issued
+- ServoEasing's `EASE_QUARTIC_IN_OUT` (Arduino library) dominates every move's total time. A variable `SETTTLE = 1.5` gives an ample buffer between movements to complete end-to-end without cut-off
+
 Claude
 - Claude (amongst other AI models) can often make assumptions and interpretation mistakes and provide results that do not align with the user's intent. This is inevitable but can become prominent in a dense project such as this. That's why constant double-checking and clearly defined objectives will optimize the behaviour of the model. Often easier said than done as users tend to make many assumptions on the behaviour of the model itself.
 
-**Next Week**:
+**Future Improvements / Implementations**:
+- Graceful skip on `UnreachableTargetError` (currently crashes the run; should log and continue with remaining pickable objects)
+- Minimum-pick distance rule to skip targets that are too close and that geometry can't grip cleanly
+- Multiple colours with matched-colour containers (sorting)
