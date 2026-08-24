@@ -21,14 +21,14 @@ HOME_POSE = {'base':90, 'shoulder':90, 'elbow':90, 'gripper':90}
 GRIPPER_OPEN = 90
 GRIPPER_CLOSED = 23
 
+
+# Custom Errors to capture unexpectancies 
 class ArmControllerError(Exception):
     '''Base exception for ArmController errors.'''
     pass
-
 class OutOfRangeError(ArmControllerError):
     '''Raised when a command angle is outside the safe operating range.'''
     pass
-
 class FirmwareError(ArmControllerError):
     '''Raised when the firmware returns an error response.'''
     pass
@@ -40,8 +40,9 @@ class ArmController:
         '''
         self.ser = serial.Serial(port, baudrate, timeout=timeout)
         time.sleep(2) # ESP32 resets on serial open; wait for boot
-        self.ser.reset_input_buffer()
 
+        # clears all accumulated, unread incoming data
+        self.ser.reset_input_buffer()
 
         # Opening the serial port resets the ESP32, and the firmware puts every servo at 90 degrees on boot
         # so HOME_POSE is a safe assumption for the arm's actual position
