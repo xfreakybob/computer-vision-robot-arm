@@ -21,7 +21,7 @@ from comm.serial_comm import ArmController, HOME_POSE, GRIPPER_OPEN, GRIPPER_CLO
 from vision.object_detector import ObjectDetector
 from kinematics.arm_chain import solve_ik
 
-# --- Setup constants, change these if your physical setup shifts ---
+# --- Setup constants ---
 TARGET_COLOUR = 'green'
 DROP_XY = (120, 0)          # (x, y) mm in the arm's frame, where picked objects go
                             # (straight forward from base, well inside reach envelope)
@@ -33,7 +33,7 @@ DROP_XY = (120, 0)          # (x, y) mm in the arm's frame, where picked objects
 # calibration drift and drop landing spread.
 DROP_ZONE_EXCLUSION = 50    # mm
 
-# --- Geometry constants tied to the calibrated setup ---
+# --- Geometry constants tied to the calibrated setup (all in mm) ---
 TABLE_Z = -30               # tabletop in model coords, base rotation axis is 30mm above table
 CYLINDER_HEIGHT = 22
 PICK_Z = TABLE_Z + CYLINDER_HEIGHT // 2   # mid-cylinder, solid grasp point
@@ -82,6 +82,13 @@ MAX_PICKS = 20              # safety cap: stop even if detector keeps seeing obj
 
 
 def main():
+    """
+    This is where everything comes together.
+    
+    Load calibrated homography -> initiate video capture and object detection class -> initiate arm controller class ->
+    while loop -> detects object outside of drop zone exclusion and finds its real world coords -> pick object closest to base first ->
+    pick all objects -> bring arm back to home popse and release camera
+    """
     with open('calibration.json') as f:
         H = np.array(json.load(f)['homography'], dtype=np.float32)
 
