@@ -127,7 +127,11 @@ OpenCV
 - Different lighting and backgrounds can cause HSV ranges for colours to shift, so implementing `hsv_tuner.py` script lets you actively find the ranges first then manually change the colour ranges in `object_detector.py`
 - Red is unique and needs two ranges for hue due to OpenCV's 8-bit image capacity (only supports up to 256 unique values when colour wheel is 360 degrees). OpenCV decided to divide hue value by 2 so that all colours can fit in one byte, thereby condensing hue to 0-179 inclusive where each unit represents two degrees. Red sits at the top of the colour wheel so its seeps into both ranges. That's why red needs to be accounted for in both the lower (arorund 0) and upper (around 179) range! 
 
-**Next Week**:
+**Next Week**: kinematics
+
+<img src="docs/media/IMG_5437.jpeg" width="400">
+<img src="docs/media/IMG_5438.jpeg" width="500">
+<img src="docs/media/IMG_5439.jpeg" width="400">
 
 ## Week 4 - Kinematics (May 31-June 6 2026)
 
