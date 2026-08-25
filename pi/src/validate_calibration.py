@@ -1,3 +1,9 @@
+"""
+Program to validate calibration data saved to json 
+
+"""
+
+
 import cv2
 import numpy as np
 import json
