@@ -1,20 +1,19 @@
 """
-Camera-to-arm calibration: builds a homography mapping camera pixel
+Camera-to-arm calibration: builds a homography, mapping camera pixel
 coordinates to real-world (x, y) in the arm's frame (mm), using the
-printed pick object as a physical fiducial.
+3d printed pick object as a physical fiducial (reference placed in fov of camera to serve as a measurement/scale/alignment).
 
 Workflow: place the object at a handful of known (x, y) points on the
-table (measured by tape measure from the base's rotation axis, same
+table (measured by ruler from the base's rotation axis, same
 convention/method used for the FK verification), and let the object
 detector find its pixel centroid automatically at each point.
 
 Before running:
-  - Set OBJECT_COLOUR to whatever colour you printed
+  - Set OBJECT_COLOUR to colour
   - Adjust CALIBRATION_POINTS to real points within the arm's confirmed
     reach, spread across at least 2 rows/columns (not all in one line,
     a homography needs spread in both directions to solve well)
 
-Run from pi/src/, needs a display for the confirmation window.
 """
 
 import cv2
@@ -22,11 +21,9 @@ import numpy as np
 import json
 from vision.object_detector import ObjectDetector
 
-OBJECT_COLOUR = 'green'   # TODO: set to colour printed
+OBJECT_COLOUR = 'green'
 
 # (world_x_mm, world_y_mm), measured from the base's rotation axis.
-# Placeholder values, replace with points that are actually reachable
-# and visible to the camera on your setup.
 CALIBRATION_POINTS = [
     (124, 0),
     (170, 0),
