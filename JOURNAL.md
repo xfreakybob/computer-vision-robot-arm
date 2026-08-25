@@ -188,3 +188,6 @@ Claude
 - Graceful skip on `UnreachableTargetError` (currently crashes the run; should log and continue with remaining pickable objects)
 - Minimum-pick distance rule to skip targets that are too close and that geometry can't grip cleanly
 - Multiple colours with matched-colour containers (sorting)
+
+<img src="docs/media/IMG_5837.jpeg" width="400">
+<img src="docs/media/IMG_5857.jpeg" width="400">
