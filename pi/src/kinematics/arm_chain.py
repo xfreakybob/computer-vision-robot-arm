@@ -22,17 +22,18 @@ Coordinate frame: origin at base's rotation axis, at the top of the base plate. 
 import numpy as np
 from ikpy.chain import Chain
 from ikpy.link import OriginLink, URDFLink
- 
+
+# Constants for link lengths
 BASE_TO_SHOULDER = 46.5
 SHOULDER_TO_ELBOW = 58
 ELBOW_TO_GRIPPER = 115
- 
- 
+
+
 def _bounds(servo_lo, servo_hi):
     """Convert a safe servo range (degrees) to the chain's zero-at-90 radians."""
     return (np.radians(servo_lo - 90), np.radians(servo_hi - 90))
  
- 
+# Actual arm chain itself, comprised of Link type objects describing each components capabilities 
 arm_chain = Chain(name='arm', active_links_mask=[False, True, True, True, False], links=[
     OriginLink(),
     URDFLink(
@@ -66,7 +67,7 @@ arm_chain = Chain(name='arm', active_links_mask=[False, True, True, True, False]
  
  
 def servo_to_chain_angles(base, shoulder, elbow):
-    """Convert move_to()-style servo degrees to the chain's radian convention."""
+    """Convert move_to()-style servo degrees (in comm -> serial_comm.py) to the chain's radian convention."""
     return [
         0,                          # OriginLink placeholder
         np.radians(base - 90),
@@ -82,13 +83,15 @@ def chain_to_servo_angles(chain_angles):
     return {
         'base': round(np.degrees(base_rad) + 90),
         'shoulder': round(np.degrees(shoulder_rad) + 90),
-        'elbow': round(np.degrees(elbow_rad) + 90),
+        'elbow': round(np.degrees(elbow_rad) + 90)
     }
  
  
 def gripper_position(base, shoulder, elbow):
     """Returns the (x, y, z) mm position of the gripper's grasp point for given servo angles."""
     angles = servo_to_chain_angles(base, shoulder, elbow)
+
+    # Computes 3D position and orientation of arm's end-effector and returns 3D position of end-effector
     matrix = arm_chain.forward_kinematics(angles)
     return matrix[:3, 3]
  
@@ -99,10 +102,11 @@ class UnreachableTargetError(Exception):
  
  
 def solve_ik(x, y, z, tolerance_mm=10):
-    # Point the base toward the target's (x, y) direction. atan2 result is
+    # Point the base toward the target's direction (x, y). atan2 result is
     # measured from +x axis toward +y, and our base=90 corresponds to the
     # arm facing +x, so we add 90 degrees to convert.
     target_base_deg = 90 + np.degrees(np.arctan2(y, x))
+
     # Clamp into the base's safe servo range
     target_base_deg = max(5, min(185, target_base_deg))
     initial_servo_pose = (int(target_base_deg), 45, 90)
@@ -110,7 +114,7 @@ def solve_ik(x, y, z, tolerance_mm=10):
     initial = servo_to_chain_angles(*initial_servo_pose)
     result = arm_chain.inverse_kinematics(
         target_position=[x, y, z],
-        initial_position=initial,
+        initial_position=initial
     )
     solved = chain_to_servo_angles(result)
  
