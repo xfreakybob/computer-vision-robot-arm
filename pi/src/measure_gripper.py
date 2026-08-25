@@ -1,3 +1,8 @@
+"""
+Measuring physical distance between grippers when commanded to GRIPPER_OPEN and GRIPPER_CLOSED positions 
+
+"""
+
 from comm.serial_comm import ArmController
 
 with ArmController() as arm:
