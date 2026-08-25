@@ -104,6 +104,9 @@ Debugging
 <img src="docs/media/IMG_5412.jpeg" width="600">
 <img src="docs/media/IMG_5419.jpeg" width="400">
 
+https://github.com/user-attachments/assets/6af50b6c-68ec-483c-aa0d-28160f729dfb
+
+
 ## Week 3 - Computer Vision Basics (May 24-30 2026)
 **Goals**: Working detection of objects of certain colours, decide more permanent camera placement? (start organizing setup board?), tune threshold for accuracy, determine shape and colour of 3d printed objects for demo and training
 
