@@ -58,11 +58,6 @@ A few of the more interesting problems solved along the way (the full story is i
 - **Traced a shoulder oscillation to mechanical resonance** in the acrylic frame, not electronics, and damped it with easing profiles instead of chasing an electrical ghost.
 - **Characterised real-world reliability** — 11 runs, 30/33 picks, with the failure modes documented rather than hidden.
 
-## Demo
- 
-<!-- Add a video link and a few photos here — see "Adding media" below. -->
-_Demo video and photos coming soon._
-
 ## Project journal
  
 [JOURNAL.md](JOURNAL.md) tracks the build week by week — goals, what got done, what broke, and what each week taught. It doubles as the honest record of how the project actually went, dead ends included.
