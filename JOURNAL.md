@@ -49,6 +49,10 @@ ESP32-C3
 - Begin Pi-side serial communication module (follows ESP32 firmware serial command format, error handling,...) via Python
 - Computer vision basic understanding and integration
 
+<img src="docs/media/IMG_5407.jpg" width="550">
+<img src="docs/media/IMG_5408.jpeg" width="300" align="right">
+
+
 ## Week 2 - Raspberry Pi to ESP32 communication (May 17-23 2026)
 **Goals**: Define safe joint angles, add joint limits to firmware, Pi-side ArmController class
 
@@ -96,6 +100,9 @@ Debugging
 - Key Takeaway: when "nothing happens" is the symptom, testing each layer in isolation from the bottom up can be more efficient than reading code top-down
 
 **Next Week**: working detection of objects using camera and OpenCV
+
+<img src="docs/media/IMG_5412.jpeg" width="600">
+<img src="docs/media/IMG_5419.jpeg" width="400">
 
 ## Week 3 - Computer Vision Basics (May 24-30 2026)
 **Goals**: Working detection of objects of certain colours, decide more permanent camera placement? (start organizing setup board?), tune threshold for accuracy, determine shape and colour of 3d printed objects for demo and training
