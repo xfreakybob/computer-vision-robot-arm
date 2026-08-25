@@ -163,6 +163,10 @@ Motion Timing
 - `move_to()` returns as soon as the firmware acknowledges (starts easing), NOT when motion completes. Sleep duration after `move_to()` are the actual gate on when the next command can be issued
 - ServoEasing's `EASE_QUARTIC_IN_OUT` (Arduino library) dominates every move's total time. A variable `SETTTLE = 1.5` gives an ample buffer between movements to complete end-to-end without cut-off
 
+Reliability Characterization
+- Aggregate: 30/33 successful picks and drops (~91% success rate)
+- Failure breakdown: 4 failures, 3 of them the same cascading root cause (initial pick disturbance either pushes a neighbouring object out of reach, or fails to grip a too-close object and knocks it further away, and then that object stays unreachable for the rest of the run)
+
 Claude
 - Claude (amongst other AI models) can often make assumptions and interpretation mistakes and provide results that do not align with the user's intent. This is inevitable but can become prominent in a dense project such as this. That's why constant double-checking and clearly defined objectives will optimize the behaviour of the model. Often easier said than done as users tend to make many assumptions on the behaviour of the model itself.
 
