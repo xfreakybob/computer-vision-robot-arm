@@ -50,7 +50,7 @@ ESP32-C3
 - Computer vision basic understanding and integration
 
 <img src="docs/media/IMG_5407.jpg" width="550">
-<img src="docs/media/IMG_5408.jpeg" width="300" align="right">
+<img src="docs/media/IMG_5408.jpeg" width="300">
 
 
 ## Week 2 - Raspberry Pi to ESP32 communication (May 17-23 2026)
