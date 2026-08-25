@@ -1,5 +1,5 @@
 # Computer Vision-Controlled Robotic Arm
-A 4-DOF pick-and-place robotic system that uses computer vision to detect and sort blocks autonomously. Built as a personal project May-August 2026.
+A 4-DOF robotic system that uses computer vision to detect and pick-and-drop objects autonomously. Built as a personal project May-August 2026.
 
 **Status**: Complete - full pipeline working end to end, ~91% pick success rate across reliability testing.
 
