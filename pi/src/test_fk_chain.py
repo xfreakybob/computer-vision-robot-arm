@@ -4,7 +4,7 @@ Verifies arm_chain.py's forward kinematics against the real arm
 Commands a few known poses and prints where the model thinks the gripper ended up. Will measure in real world with calipers.
 Measured from the base's rotation axis, at the top of the base plate:
     z = straight up
-    x = horizontal, in the direction the arm faces at base=90 (home)
+    x = horizontal, in the direction the arm faces at base=90 (home), away from esp32 board
     y = horizontal, sideways from that
 """
 
